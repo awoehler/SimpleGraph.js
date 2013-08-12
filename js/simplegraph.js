@@ -54,7 +54,7 @@ SimpleGraph.prototype.bar_horizontal = function( self ) {
 		//Draw the dark grid lines behind the graph.	
 	if( self.grid_spacing > 0 ) {
 		for( var i=0; i < self.width; i += self.grid_spacing*scale ) {
-			sample1.raphael.path("M" + i + ",0,L" + i + "," + self.height).attr();
+			self.raphael.path("M" + i + ",0,L" + i + "," + self.height).attr();
 		}
 	}
 		//Draw the bars.
@@ -76,7 +76,7 @@ SimpleGraph.prototype.bar_horizontal = function( self ) {
 		//Draw light grid lines in front of the graph
 	if( self.grid_spacing > 0 ) {
 		for( var i=0; i < self.width; i += self.grid_spacing*scale ) {
-			sample1.raphael.path("M" + i + ",0,L" + i + "," + self.height).attr({"stroke-opacity":0.25});
+			self.raphael.path("M" + i + ",0,L" + i + "," + self.height).attr({"stroke-opacity":0.25});
 		}
 	}
 }
