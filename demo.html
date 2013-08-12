@@ -61,12 +61,37 @@ sample1.render();</pre>
 sample2 = new SimpleGraph( document.getElementById( "sample2"), dataset );
 sample2.render();</pre>
 </div>
+
+<div class="span8 offset1">
+<h3>Horizontal Line Graph</h3>
+<div id="sample3"></div>
+<pre>dataset = {
+	"settings": {
+		"mode":"line_horizontal",
+		"grid_spacing": 1 
+	},
+	"data" : [ 
+		{ "value":1 },
+		{ "value":3 },
+		{ "value":2 },
+		{ "value":2 },
+		{ "value":10 },
+		{ "value":2 },
+		{ "value":4 }
+	]
+};
+sample3 = new SimpleGraph( document.getElementById( "sample3"), dataset );
+sample3.render();</pre>
 </div>
+
+</div>
+
 
 <script>
 $(document).ready( function() {
 	eval( $("#sample1").parent().find("pre").text() );
 	eval( $("#sample2").parent().find("pre").text() );
+	eval( $("#sample3").parent().find("pre").text() );
 });
 </script>
 </body>

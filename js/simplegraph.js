@@ -118,3 +118,32 @@ SimpleGraph.prototype.bar_vertical = function( self ) {
 		}
 	}
 }
+
+SimpleGraph.prototype.line_horizontal = function( self ) {
+	var barWidth = self.width / (self.data.length-1);
+	var max = self.data[0].value;
+	for( var i=1; i < self.data.length; i++ ) {
+		if( self.data[i].value > max ) {
+			max = self.data[i].value;
+		}
+	}
+	var scale = self.height / max;
+
+		//Draw the dark grid lines behind the graph.
+	if( self.grid_spacing > 0 ) {
+		var lines = 0;
+		for( var i=0; i < self.width; i += self.grid_spacing*scale ) {
+			self.raphael.path("M0," + i + "L" + self.width + "," + i).attr({"stroke-opacity":0.25});
+			lines++;
+		}
+		for( var i=0; i < lines; i++ ) {
+			self.raphael.text( 10, self.height - (self.grid_spacing * i * scale), i );
+		}
+	}
+		//Draw the bars.
+	var path = "M0," + self.data[0].value * scale;
+	for( var i=1; i < self.data.length; i++ ) {
+		path += "L" + i*barWidth + "," + (self.height - self.data[i].value * scale);
+	}
+	self.raphael.path( path );
+}
