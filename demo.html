@@ -15,31 +15,36 @@
 	<script src="js/demo.js"></script>
 </head>
 <body>
-<h1>SimpleGraph.js Demo</h1>
+<div class="row">
+	<div class="offset1">
+		<h1>SimpleGraph.js Demo</h1>
+	</div>
+</div>
+
 
 <div class="row">
-<div class="span8">
+<div class="span8 offset1">
 <h3>Horizontal Bar Graph</h3>
 <div id="sample1"></div>
 <pre>dataset = {
 	"settings": { 
-		"grid_spacing": 1 
+		"grid_spacing": 1,
+		"legend" : " Highest , High , Medium , Low , Lowest , none "
 	},
 	"data" : [ 
 		{ "value":1 },
-		{ "value":3, "attr": {"fill":"#bab", "stroke-width":0} },
-		{ "value":2 },
-		{ "value":2 },
-		{ "value":10 },
-		{ "value":2 },
-		{ "value":4 }
+		{ "value":2, "attr": {"fill":"#bab", "stroke-width":0} },
+		{ "value":3 },
+		{ "value":4 },
+		{ "value":5 },
+		{ "value":6 }
 	]
 };
 sample1 = new SimpleGraph( document.getElementById( "sample1"), dataset );
 sample1.render();</pre>
 </div>
 
-<div class="span8">
+<div class="span8 offset1">
 	<h3>Vertical Bar Graph</h3>
 	<div id="sample2"></div>
 <pre>dataset = {

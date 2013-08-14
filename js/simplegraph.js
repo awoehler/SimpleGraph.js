@@ -3,40 +3,52 @@
  * 
  * SimpleGraph.js is based on the Raphaeljs libary (https://github.com/DmitryBaranovskiy/raphael/)
  */
-SimpleGraph = function( id, init ) {
+SimpleGraph = function( id, init ){
 	var self = this;
 	self.status = 'ok';
 
-		//Make sure that the init.settings value is initialized.
-	if( typeof init == 'undefined' ) {
-		init = { "settings": {} };
-	} else if( typeof init.settings == 'undefined' ) {
-		init.settings = {};
+	//Make sure that the init.settings value is initialized.
+	if (typeof init == 'undefined') {
+		init = {
+			"settings": {}
+		};
+	} else {
+		if( typeof init.settings == 'undefined' ) {
+			init.settings = {};
+		}
 	}
-
-	self.mode = typeof init.settings.mode == 'string' ? init.settings.mode : 'bar_horizontal';	//Options: bar-horizontal, bar-horizontal-stacked, bar-vertical, bar-vertical-stacked, line-horizontal, etc....
+	self.legend = typeof init.settings.legend == 'string' ? init.settings.legend.split(',') : [];
+	self.mode = typeof init.settings.mode == 'string' ? init.settings.mode : 'bar_horizontal'; //Options: bar-horizontal, bar-horizontal-stacked, bar-vertical, bar-vertical-stacked, line-horizontal, etc....
 	self.width = $(id).width();
 	self.height = $(id).height();
-	self.bar_attr = typeof init.settings.bar_attr != 'object' ? { "fill":"#aba", "stroke-width":0 } : init.settings.bar_attr;
-	self.raphael = new Raphael( $(id).attr("id"), self.width, self.height );
-	self.grid_spacing = typeof init.settings.grid_spacing == "number" ? init.settings.grid_spacing : 0 ;
-	if( typeof init.data == 'object' ) {
+	self.bar_attr = typeof init.settings.bar_attr != 'object' ? {
+		"fill": "#aba",
+		"stroke-width": 0
+	} : init.settings.bar_attr;
+	self.raphael = new Raphael($(id).attr("id"), self.width, self.height);
+	self.grid_spacing = typeof init.settings.grid_spacing == "number" ? init.settings.grid_spacing : 0;
+
+		//Initialize the object.
+	if( typeof init.data == 'object') {
 		self.data = init.data;
 	} else {
 		self.data = [];
 	}
 
-	self.render = function() {
-		try{ 
-			self.raphael.clear();
-			if( typeof self[self.mode] != 'function' ) {
-				throw( self.mode + ' is not a valid render type' );
+		//Initialize the legend.
+	self.legendWidth = 0;
+	if( typeof self.legend == "object" ) {
+		for ( var i = 0; i < self.legend.length; i++ ) {
+			var tmp = self.raphael.text(0, 0, self.legend[i]).attr({ "text-anchor": "end" });
+			//self.legend.push( tmp );
+			if (tmp.getBBox().width > self.legendWidth) {
+				self.legendWidth = tmp.getBBox().width;
 			}
-			self[self.mode]( self );
-			return this;
-		} catch(e) {
-			self.status = e;
-			self.raphael.text( self.width/2, self.height/2, e );
+			tmp.remove();
+			//tmp.hide();
+		}
+	}
+	this.max = this.maxValue();
 }
 SimpleGraph.prototype.setCSV = function(values) {
 	var v = values.split(',');
@@ -50,42 +62,74 @@ SimpleGraph.prototype.setCSV = function(values) {
 	this.max = this.maxValue();
 }
 
-SimpleGraph.prototype.bar_horizontal = function( self ) {
-	var barWidth = self.height / self.data.length;
-	var max = self.data[0].value;
-	for( var i=1; i < self.data.length; i++ ) {
-		if( self.data[i].value > max ) {
-			max = self.data[i].value;
+SimpleGraph.prototype.maxValue = function(){
+	if (typeof this.data == 'object' && this.data.length > 0) {
+		var max = this.data[0].value;
+		for (var i = 1; i < this.data.length; i++) {
+			if (this.data[i].value > max) {
+				max = this.data[i].value;
+			}
 		}
+		return max;
 	}
-	var scale = self.width / max;
-	
+	return 0;
+}
+
+SimpleGraph.prototype.render = function() {
+	//this.max = this.maxValue();
+	try{
+		this.raphael.clear();
+		if( typeof this[this.mode] != 'function' ) {
+			throw( this.mode + ' is not a valid render type' );
+		}
+		this[this.mode]();
+		return this;
+	} catch(e) {
+		this.status = e;
+		this.raphael.text( this.width/2, this.height/2, e );
+	}
+}
+
+
+SimpleGraph.prototype.bar_horizontal = function( ) {
+	var barWidth = this.height / this.data.length;
+
+		//Determine the maximum width of the legend items.
+	var scale = (this.width - this.legendWidth) / this.max;
+
 		//Draw the dark grid lines behind the graph.	
-	if( self.grid_spacing > 0 ) {
-		for( var i=0; i < self.width; i += self.grid_spacing*scale ) {
-			self.raphael.path("M" + i + ",0,L" + i + "," + self.height).attr();
+	if( this.grid_spacing > 0 ) {
+		for( var i=this.legendWidth; i < this.width; i += ( this.grid_spacing*scale ) ) {
+			this.raphael.path("M" + (i + this.legendWidth) + ","+ 0 + ",L" + (i + this.legendWidth) + "," + this.height).attr()
 		}
 	}
-		//Draw the bars.
-	for( var i=0; i < self.data.length; i++ ) {
-		if( typeof self.data[i].attr == 'object' ) {
-			var attr = self.data[i].attr;
-		} else {
-			var attr = self.bar_attr;
+		//Draw the legend.
+	left = 0;
+	if( typeof this.legend != "undefined" ) {
+		for (var i = 0; i < this.legend.length; i++) {
+			this.raphael.text( this.legendWidth, i * barWidth + barWidth/2, this.legend[i] ).attr({"text-anchor":"end"});
 		}
-		attr.title = self.data[i].value;
-		self.data[i].bar = self.raphael.rect( 0, i * barWidth, self.data[i].value * scale, barWidth );
-		self.raphael.text( 5, i * barWidth + barWidth/2, self.data[i].value );
-		self.data[i].bar.attr( attr );
-		self.data[i].bar.click( function( a ) {
+	}
+
+		//Draw the bars.
+	for( var i=0; i < this.data.length; i++ ) {
+		if( typeof this.data[i].attr == 'object' ) {
+			var attr = this.data[i].attr;
+		} else {
+			var attr = this.bar_attr;
+		}
+		attr.title = this.data[i].value;
+		this.data[i].bar = this.raphael.rect( this.legendWidth, i * barWidth, (this.data[i].value * scale), barWidth ); //.translate( , 0);
+		this.raphael.text( this.legendWidth + 5, i * barWidth + barWidth/2, this.data[i].value );
+		this.data[i].bar.attr( attr );
+		this.data[i].bar.click( function( a ) {
 			//$(a.target) );
 		});
-		//.glow().id;
 	}
 		//Draw light grid lines in front of the graph
-	if( self.grid_spacing > 0 ) {
-		for( var i=0; i < self.width; i += self.grid_spacing*scale ) {
-			self.raphael.path("M" + i + ",0,L" + i + "," + self.height).attr({"stroke-opacity":0.25});
+	if( this.grid_spacing > 0 ) {
+		for( var i=this.legendWidth; i < this.width; i += this.grid_spacing*scale ) {
+			this.raphael.path("M" + (i + this.legendWidth) + ","+ 0 + ",L" + (i + this.legendWidth) + "," + this.height).attr({"stroke-opacity":0.25});
 		}
 	}
 }
