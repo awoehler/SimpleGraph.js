@@ -37,8 +37,17 @@ SimpleGraph = function( id, init ) {
 		} catch(e) {
 			self.status = e;
 			self.raphael.text( self.width/2, self.height/2, e );
+}
+SimpleGraph.prototype.setCSV = function(values) {
+	var v = values.split(',');
+	this.data = [];
+	for( var i=0; i < v.length; i++ ) {
+		if(  v[i] > this.max ) {
+			this.max = v[i];
 		}
+		this.data.push( { "value": v[i] } );
 	}
+	this.max = this.maxValue();
 }
 
 SimpleGraph.prototype.bar_horizontal = function( self ) {
