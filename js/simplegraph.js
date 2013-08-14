@@ -90,69 +90,63 @@ SimpleGraph.prototype.bar_horizontal = function( self ) {
 	}
 }
 
-SimpleGraph.prototype.bar_vertical = function( self ) {
-	var barWidth = self.width / self.data.length;
-	var max = self.data[0].value;
-	for( var i=1; i < self.data.length; i++ ) {
-		if( self.data[i].value > max ) {
-			max = self.data[i].value;
-		}
-	}
-	var scale = self.height / max;
+SimpleGraph.prototype.bar_vertical = function( ) {
+	var barWidth = this.width / this.data.length;
+	var scale = this.height / this.max;
 	
 		//Draw dark grid lines behind of the graph
-	if( self.grid_spacing > 0 ) {
-		for( var i=0; i < self.width; i += self.grid_spacing*scale ) {
-			self.raphael.path("M0," + i + "L" + self.width + "," + i);
+	if( this.grid_spacing > 0 ) {
+		for( var i=0; i < this.width; i += this.grid_spacing*scale ) {
+			this.raphael.path("M0," + i + "L" + this.width + "," + i);
 		}
 	}
 
 		//Draw the bars.
-	for( var i=0; i < self.data.length; i++ ) {
-		if( typeof self.data[i].attr == 'object' ) {
-			var attr = self.data[i].attr;
+	for( var i=0; i < this.data.length; i++ ) {
+		if( typeof this.data[i].attr == 'object' ) {
+			var attr = this.data[i].attr;
 		} else {
-			var attr = self.bar_attr;
+			var attr = this.bar_attr;
 		}
-		attr.title = self.data[i].value;
+		attr.title = this.data[i].value;
 		//x,y,w,h
-		var scaled_value = Math.round( self.data[i].value * scale );
-		self.raphael.rect( i * barWidth, self.height - scaled_value, barWidth, scaled_value ).attr( attr );
-		self.raphael.text( i * barWidth + barWidth/2, self.height - 10, self.data[i].value,"start" );
+		var scaled_value = Math.round( this.data[i].value * scale );
+		this.raphael.rect( i * barWidth, this.height - scaled_value, barWidth, scaled_value ).attr( attr );
+		this.raphael.text( i * barWidth + barWidth/2, this.height - 10, this.data[i].value,"start" );
 	}
 		//Draw light grid lines in front of the graph
-	if( self.grid_spacing > 0 ) {
-		for( var i=0; i < self.width; i += self.grid_spacing*scale ) {
-			self.raphael.path("M0," + i + "L" + self.width + "," + i).attr({"stroke-opacity":0.25});
+	if( this.grid_spacing > 0 ) {
+		for( var i=0; i < this.width; i += this.grid_spacing*scale ) {
+			this.raphael.path("M0," + i + "L" + this.width + "," + i).attr({"stroke-opacity":0.25});
 		}
 	}
 }
 
-SimpleGraph.prototype.line_horizontal = function( self ) {
-	var barWidth = self.width / (self.data.length-1);
-	var max = self.data[0].value;
-	for( var i=1; i < self.data.length; i++ ) {
-		if( self.data[i].value > max ) {
-			max = self.data[i].value;
+SimpleGraph.prototype.line_horizontal = function( ) {
+	var barWidth = this.width / (this.data.length-1);
+	var max = this.data[0].value;
+	for( var i=1; i < this.data.length; i++ ) {
+		if( this.data[i].value > max ) {
+			max = this.data[i].value;
 		}
 	}
-	var scale = self.height / max;
+	var scale = this.height / max;
 
 		//Draw the dark grid lines behind the graph.
-	if( self.grid_spacing > 0 ) {
+	if( this.grid_spacing > 0 ) {
 		var lines = 0;
-		for( var i=0; i < self.width; i += self.grid_spacing*scale ) {
-			self.raphael.path("M0," + i + "L" + self.width + "," + i).attr({"stroke-opacity":0.25});
+		for( var i=0; i < this.width; i += this.grid_spacing*scale ) {
+			this.raphael.path("M0," + i + "L" + this.width + "," + i).attr({"stroke-opacity":0.25});
 			lines++;
 		}
 		for( var i=0; i < lines; i++ ) {
-			self.raphael.text( 10, self.height - (self.grid_spacing * i * scale), i );
+			this.raphael.text( 10, this.height - (this.grid_spacing * i * scale), i );
 		}
 	}
 		//Draw the bars.
-	var path = "M0," + self.data[0].value * scale;
-	for( var i=1; i < self.data.length; i++ ) {
-		path += "L" + i*barWidth + "," + (self.height - self.data[i].value * scale);
+	var path = "M0," + this.data[0].value * scale;
+	for( var i=1; i < this.data.length; i++ ) {
+		path += "L" + i*barWidth + "," + (this.height - this.data[i].value * scale);
 	}
-	self.raphael.path( path );
+	this.raphael.path( path );
 }
