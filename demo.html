@@ -89,6 +89,29 @@ sample3 = new SimpleGraph( document.getElementById( "sample3"), dataset );
 sample3.render();</pre>
 </div>
 
+<div class="span8 offset1">
+<h3>XY Line Graph</h3>
+<div id="sample4"></div>
+<pre>dataset = {
+	"settings": {
+		"mode":"xy_line",
+		"grid_spacing": 1,
+		"scale_mode": "fit", /* fit | proportional */
+		"points": true
+	},
+	"data" : [
+		{ "x":0, "y":0 },
+		{ "x":2, "y":2 },
+		{ "x":3, "y":4 },
+		{ "x":5, "y":4 },
+		{ "x":6, "y":8 },
+		{ "x":8, "y":4 }
+	]
+};
+sample4 = new SimpleGraph( document.getElementById( "sample4"), dataset );
+sample4.render();</pre>
+</div>
+
 </div>
 
 
@@ -97,6 +120,7 @@ $(document).ready( function() {
 	eval( $("#sample1").parent().find("pre").text() );
 	eval( $("#sample2").parent().find("pre").text() );
 	eval( $("#sample3").parent().find("pre").text() );
+	eval( $("#sample4").parent().find("pre").text() );
 });
 </script>
 </body>
