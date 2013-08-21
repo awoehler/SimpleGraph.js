@@ -27,7 +27,7 @@ SimpleGraph = function( id, init ){
 	} : init.settings.bar_attr;
 	self.raphael = new Raphael($(id).attr("id"), self.width, self.height);
 	self.grid_spacing = typeof init.settings.grid_spacing == "number" ? init.settings.grid_spacing : 0;
-
+	self.scale_mode =   typeof init.settings.scale_mode == 'string' ?   init.settings.scale_mode : "proportional";
 		//Initialize the object.
 	if( typeof init.data == 'object') {
 		self.data = init.data;
@@ -191,6 +191,71 @@ SimpleGraph.prototype.line_horizontal = function( ) {
 	var path = "M0," + this.data[0].value * scale;
 	for( var i=1; i < this.data.length; i++ ) {
 		path += "L" + i*barWidth + "," + (this.height - this.data[i].value * scale);
+	}
+	this.raphael.path( path );
+}
+
+SimpleGraph.prototype.xy_line = function( ) {
+	var barWidth = this.width / (this.data.length-1);
+	this.maxX = this.data[0].x;
+	this.maxY = this.data[0].y;
+	this.minX = this.data[0].x;
+	this.minY = this.data[0].y;
+	for( var i=1; i < this.data.length; i++ ) {
+		if( this.data[i].x > this.maxX ) {
+			this.maxX = this.data[i].x;
+		}
+		if( this.data[i].y > this.maxY ) {
+			this.maxY = this.data[i].y;
+		}
+		if( this.data[i].x < this.minX ) {
+			this.minX = this.data[i].x;
+		}
+		if( this.data[i].y < this.minY ) {
+			this.minY = this.data[i].y;
+		}
+	}
+	this.scaleX = this.width / (this.maxX - this.minX);
+	this.scaleY = this.height / (this.maxY - this.minY);
+	switch( this.scale_mode ) {
+		case 'proportional':
+			if( this.scaleX < this.scaleY ) {
+				this.scaleY = this.scaleX;
+			} else {
+				this.scaleX = this.scaleY;
+			}
+			break;
+
+		case 'fit':
+		default:
+	}
+
+		//Draw the dark grid lines behind the graph.
+	if( this.grid_spacing > 0 ) {
+		var lines = 0;
+		for( var i=0; i <= this.width; i += this.grid_spacing*this.scaleY ) {
+			this.raphael.path("M0," + ( this.height - i ) + "L" + this.width + "," + (this.height - i ) ).attr({"stroke-opacity":0.25});
+			lines++;
+		}
+		for( var i=0; i <= lines; i++ ) {
+			this.raphael.text( 10, this.height - (this.grid_spacing * i * this.scaleY), i );
+		}
+
+		lines = 0;
+		for( var i=0; i <= this.width; i += this.grid_spacing*this.scaleX ) {
+			this.raphael.path("M" + i + ",0L" + i + "," + this.height ).attr({"stroke-opacity":0.25});
+			lines++;
+		}
+
+		for( var i=0; i <= lines; i++ ) {
+			this.raphael.text( (i * this.grid_spacing * this.scaleX), (this.height - 10), i );
+		}
+	}
+
+		//Draw the line.
+	var path = "M"+(this.data[0].x * this.scaleX)+"," + ( this.height -  this.data[0].y * this.scaleY );
+	for( var i=1; i < this.data.length; i++ ) {
+		path += "L" + (this.data[i].x * this.scaleX) + "," + (this.height -  this.data[i].y * this.scaleY);
 	}
 	this.raphael.path( path );
 }
