@@ -294,7 +294,7 @@ SimpleGraph.prototype.box_whisker = function( ) {
 
 	var scale = this.width / (max - min);
 		//Draw the line for Q1 and Q4
-	this.raphael.path("M" + (min * scale) + "," + (this.height / 2 ) + ",L" + (max * scale - min * scale) + "," + (this.height / 2 ) );
+	this.raphael.path( "M0," + ( this.height / 2 ) + ",L" + ( this.width ) + "," + ( this.height / 2 ) );
 		//Draw the Q2
 	bar_width = this.height / 4;
 	this.raphael.rect( q1_value * scale - min * scale, bar_width, (middle_value - q1_value) * scale, bar_width * 2  ).attr( { "fill":"#fff" } );
