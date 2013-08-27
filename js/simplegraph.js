@@ -259,3 +259,46 @@ SimpleGraph.prototype.xy_line = function( ) {
 	}
 	this.raphael.path( path );
 }
+
+SimpleGraph.prototype.box_whisker = function( ) {
+	var data = [];
+	for( var i=0; i < this.data.length; i++ ) {
+		data.push( parseFloat( this.data[i].value ) );
+	}
+	data.sort( function (a, b) {
+		return a > b ? 1 : a < b ? -1 : 0;
+	});
+
+	var length = data.length;
+	var min = data[0];
+	var max = data[ data.length - 1 ];
+	var middle = (data.length) / 2;
+	var h1 = data.slice( 0, Math.floor( data.length/2 ) );	//Return the lower half of the array.
+	if( Math.floor( middle ) == middle ) {
+		//Even number of elements.
+		var h2 = data.slice( middle, data.length );
+		var middle_value = (data[ Math.floor( middle ) ] + data[ Math.floor( middle ) - 1 ] ) /2;
+	} else {
+		//Odd number of elements.
+		var h2 = data.slice( Math.ceil( middle ), data.length );
+		var middle_value = data[ Math.floor( middle ) ]; 
+	}
+		//Are the lower/upper halfs even in length or odd?
+	if( h1.length % 2 == 0 ) { 	//Even
+		var q1_value = ( h1[ h1.length / 2 ] + h1[ h1.length / 2 - 1 ] ) / 2;
+		var q3_value = ( h2[ h2.length / 2 ] + h2[ h2.length / 2 - 1 ] ) / 2;
+	} else {	//Odd
+		var q1_value = h1[ Math.floor( h1.length / 2 )];
+		var q3_value = h2[ Math.floor( h2.length / 2 )];
+	}
+
+	var scale = this.width / (max - min);
+		//Draw the line for Q1 and Q4
+	this.raphael.path("M" + (min * scale) + "," + (this.height / 2 ) + ",L" + (max * scale - min * scale) + "," + (this.height / 2 ) );
+		//Draw the Q2
+	bar_width = this.height / 4;
+	this.raphael.rect( q1_value * scale - min * scale, bar_width, (middle_value - q1_value) * scale, bar_width * 2  ).attr( { "fill":"#fff" } );
+		//Draw Q3
+	this.raphael.rect( middle_value * scale - min * scale, bar_width, ( q3_value - middle_value ) * scale, bar_width * 2  ).attr( { "fill":"#fff" } );
+}
+

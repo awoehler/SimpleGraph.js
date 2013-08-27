@@ -114,13 +114,37 @@ sample4.render();</pre>
 
 </div>
 
+<div class="span8 offset1">
+<h3>Box and Whisker Graph</h3>
+<div id="sample5"></div>
+<pre>dataset = {
+	"settings": {
+		"mode":"box_whisker",
+	},
+	"data" : [
+		{ "value":0 },
+		{ "value":1 },
+		{ "value":2 },
+		{ "value":3 },
+		{ "value":4 },
+		{ "value":5 },
+		{ "value":6 },
+		{ "value":7 }
+	]
+};
+sample5 = new SimpleGraph( document.getElementById( "sample5"), dataset );
+sample5.render();</pre>
+</div>
+
+</div>
 
 <script>
 $(document).ready( function() {
-	eval( $("#sample1").parent().find("pre").text() );
-	eval( $("#sample2").parent().find("pre").text() );
-	eval( $("#sample3").parent().find("pre").text() );
-	eval( $("#sample4").parent().find("pre").text() );
+	//eval( $("#sample1").parent().find("pre").text() );
+	//eval( $("#sample2").parent().find("pre").text() );
+	//eval( $("#sample3").parent().find("pre").text() );
+	//eval( $("#sample4").parent().find("pre").text() );
+	eval( $("#sample5").parent().find("pre").text() );
 });
 </script>
 </body>
