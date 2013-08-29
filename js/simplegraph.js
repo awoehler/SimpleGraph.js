@@ -64,10 +64,10 @@ SimpleGraph.prototype.setCSV = function(values) {
 
 SimpleGraph.prototype.maxValue = function(){
 	if (typeof this.data == 'object' && this.data.length > 0) {
-		var max = this.data[0].value;
+		var max = parseFloat( this.data[0].value );
 		for (var i = 1; i < this.data.length; i++) {
-			if (this.data[i].value > max) {
-				max = this.data[i].value;
+			if ( parseFloat( this.data[i].value )> max) {
+				max = parseFloat( this.data[i].value );
 			}
 		}
 		return max;
@@ -76,7 +76,6 @@ SimpleGraph.prototype.maxValue = function(){
 }
 
 SimpleGraph.prototype.render = function() {
-	//this.max = this.maxValue();
 	try{
 		this.raphael.clear();
 		if( typeof this[this.mode] != 'function' ) {
@@ -168,13 +167,7 @@ SimpleGraph.prototype.bar_vertical = function( ) {
 
 SimpleGraph.prototype.line_horizontal = function( ) {
 	var barWidth = this.width / (this.data.length-1);
-	var max = this.data[0].value;
-	for( var i=1; i < this.data.length; i++ ) {
-		if( this.data[i].value > max ) {
-			max = this.data[i].value;
-		}
-	}
-	var scale = this.height / max;
+	var scale = this.height / this.max;
 
 		//Draw the dark grid lines behind the graph.
 	if( this.grid_spacing > 0 ) {
@@ -188,7 +181,7 @@ SimpleGraph.prototype.line_horizontal = function( ) {
 		}
 	}
 		//Draw the bars.
-	var path = "M0," + this.data[0].value * scale;
+	var path = "M0," + (this.height - this.data[0].value * scale );
 	for( var i=1; i < this.data.length; i++ ) {
 		path += "L" + i*barWidth + "," + (this.height - this.data[i].value * scale);
 	}
